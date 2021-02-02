@@ -10,8 +10,8 @@ using SaleWebMvc.Data;
 namespace SaleWebMvc.Migrations
 {
     [DbContext(typeof(SaleWebMvcContext))]
-    [Migration("20210202225823_otherEntities")]
-    partial class otherEntities
+    [Migration("20210202234351_Intial")]
+    partial class Intial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
