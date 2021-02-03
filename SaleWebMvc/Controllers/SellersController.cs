@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaleWebMvc.Data;
+using SaleWebMvc.Models;
 using SaleWebMvc.Services;
 using System;
 using System.Collections.Generic;
@@ -41,10 +42,12 @@ namespace SaleWebMvc.Controllers
         // POST: SellersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Seller seller)
         {
             try
             {
+                _sellerService.Insert(seller);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
