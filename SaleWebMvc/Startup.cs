@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SaleWebMvc.Data;
+using SaleWebMvc.Services;
 
 namespace SaleWebMvc
 {
@@ -39,7 +40,9 @@ namespace SaleWebMvc
             services.AddDbContext<SaleWebMvcContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SaleWebMvcContext")));
 
+            // Injeção de independencia
             services.AddScoped<SeedingServices>();
+            services.AddScoped<SellerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
