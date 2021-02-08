@@ -31,9 +31,17 @@ namespace SaleWebMvc.Controllers
         }
 
         // GET: SellersController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            return View();
+            if (id == null)
+                return NotFound();
+
+            var obj = _sellerService.FindById(id.Value);
+
+            if (obj == null)
+                return NotFound();           
+
+            return View(obj);
         }
 
         // GET: SellersController/Create
