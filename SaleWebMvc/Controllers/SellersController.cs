@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SaleWebMvc.Data;
 using SaleWebMvc.Models;
+using SaleWebMvc.Models.ViewModels;
 using SaleWebMvc.Services;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,12 @@ namespace SaleWebMvc.Controllers
     public class SellersController : Controller
     {
         private readonly SellerService _sellerService;
+        private readonly DepartmentService _departmentService;
 
-        public SellersController(SellerService sellerService)
+        public SellersController(SellerService sellerService, DepartmentService departmentService)
         {
             _sellerService = sellerService;
+            _departmentService = departmentService;
         }
 
         // GET: SellersController
@@ -36,7 +39,9 @@ namespace SaleWebMvc.Controllers
         // GET: SellersController/Create
         public ActionResult Create()
         {
-            return View();
+            var departmens = _departmentService.FindAll();
+            var viewModel = new SellerViemModel { Departments = departmens };
+            return View(viewModel);
         }
 
         // POST: SellersController/Create
