@@ -83,18 +83,30 @@ namespace SaleWebMvc.Controllers
         }
 
         // GET: SellersController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+                return NotFound();
+
+            var obj = _sellerService.FindById(id.Value);            
+
+            if (obj == null)
+                return NotFound();
+
+            obj.Department = _departmentService.FindAll().Where(x => x.Id == obj.DepartmentId).FirstOrDefault();
+
+            return View(obj);
         }
 
         // POST: SellersController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
+                _sellerService.Remove(id);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
