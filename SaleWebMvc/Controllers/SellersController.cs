@@ -36,7 +36,7 @@ namespace SaleWebMvc.Controllers
         public ActionResult Details(int? id)
         {
             if (id == null)
-                return RedirectToAction(nameof(Error), new { message = "Id not provided"});
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
 
             var obj = _sellerService.FindById(id.Value);
 
@@ -61,6 +61,13 @@ namespace SaleWebMvc.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var department = _departmentService.FindAll();
+                    var viewModel = new SellerViemModel { Seller = seller, Departments = department };
+                    return View(viewModel);
+                };
+
                 _sellerService.Insert(seller);
 
                 return RedirectToAction(nameof(Index));
@@ -94,6 +101,13 @@ namespace SaleWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Seller seller)
         {
+            if (!ModelState.IsValid) 
+            {
+                var department = _departmentService.FindAll();
+                var viewModel = new SellerViemModel { Seller = seller, Departments = department };
+                return View(viewModel);
+            };          
+
             if (id != seller.Id)
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
 
