@@ -153,9 +153,9 @@ namespace SaleWebMvc.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(IntegrityException e)
             {
-                return View();
+                return RedirectToAction(nameof(Error), new { message = e.Message }); ;
             }
         }
 
