@@ -5,6 +5,7 @@ using SaleWebMvc.Data;
 using SaleWebMvc.Models;
 using SaleWebMvc.Models.ViewModels;
 using SaleWebMvc.Services;
+using SaleWebMvc.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,23 +71,45 @@ namespace SaleWebMvc.Controllers
         }
 
         // GET: SellersController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            return View();
+            if (id == null)
+                return NotFound();
+
+            var obj = _sellerService.FindById(id.Value);
+
+            if (obj == null)
+                return NotFound();
+
+            List<Department> departments = _departmentService.FindAll();
+
+            SellerViemModel sellerViemModel = new SellerViemModel { Seller = obj, Departments = departments };
+
+            return View(sellerViemModel);
         }
 
         // POST: SellersController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Seller seller)
         {
+            if (id != seller.Id)
+                return BadRequest();
+
             try
-            {
+            {              
+
+                _sellerService.Update(seller);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (NotFoundException)
             {
-                return View();
+                return NotFound();
+            }
+            catch (DbConcurrencyException)
+            {
+                return BadRequest();
             }
         }
 
