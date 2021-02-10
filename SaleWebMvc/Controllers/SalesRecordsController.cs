@@ -12,13 +12,11 @@ using SaleWebMvc.Services;
 namespace SaleWebMvc.Controllers
 {
     public class SalesRecordsController : Controller
-    {
-        private readonly SaleWebMvcContext _context;
+    {   
         private readonly SalesRecordService _salesRecordService;
 
-        public SalesRecordsController(SaleWebMvcContext context, SalesRecordService salesRecordService)
+        public SalesRecordsController(SalesRecordService salesRecordService)
         {
-            _context = context;
             _salesRecordService = salesRecordService;
         }
 
@@ -45,134 +43,22 @@ namespace SaleWebMvc.Controllers
             return View(result);
         }
 
-        public async Task<IActionResult> GroupingSearch()
+        public async Task<IActionResult> GroupingSearch(DateTime? minDate, DateTime? maxDate)
         {
-            return View();
+            if (!minDate.HasValue)
+                minDate = new DateTime(DateTime.Now.Year, 1, 1);
+
+            if (!maxDate.HasValue)
+                maxDate = DateTime.Now;
+
+            ViewData["minDate"] = minDate.Value.ToString("yyyy-MM-dd");
+
+            ViewData["maxDate"] = maxDate.Value.ToString("yyyy-MM-dd");
+
+            var result = await _salesRecordService.FindByDateGroupingAsync(minDate, maxDate);
+
+            return View(result);
         }
 
-        // GET: SalesRecords/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var salesRecord = await _context.SalesRecord
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (salesRecord == null)
-            {
-                return NotFound();
-            }
-
-            return View(salesRecord);
-        }
-
-        // GET: SalesRecords/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: SalesRecords/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Data,Amount,Status")] SalesRecord salesRecord)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(salesRecord);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(salesRecord);
-        }
-
-        // GET: SalesRecords/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var salesRecord = await _context.SalesRecord.FindAsync(id);
-            if (salesRecord == null)
-            {
-                return NotFound();
-            }
-            return View(salesRecord);
-        }
-
-        // POST: SalesRecords/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Data,Amount,Status")] SalesRecord salesRecord)
-        {
-            if (id != salesRecord.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(salesRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SalesRecordExists(salesRecord.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(salesRecord);
-        }
-
-        // GET: SalesRecords/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var salesRecord = await _context.SalesRecord
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (salesRecord == null)
-            {
-                return NotFound();
-            }
-
-            return View(salesRecord);
-        }
-
-        // POST: SalesRecords/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var salesRecord = await _context.SalesRecord.FindAsync(id);
-            _context.SalesRecord.Remove(salesRecord);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SalesRecordExists(int id)
-        {
-            return _context.SalesRecord.Any(e => e.Id == id);
-        }
     }
 }
